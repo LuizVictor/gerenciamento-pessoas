@@ -1,12 +1,16 @@
 package br.com.luizvictor.gerenciamentopessoas.services;
 
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
+import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class PessoaServiceTest {
     @Autowired
     private PessoaService pessoaService;
+    @Autowired
+    private PessoaRepository pessoaRepository;
+
+    @AfterEach
+    void tearDown() {
+        pessoaRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Deve salvar pessoa")
@@ -22,5 +33,30 @@ class PessoaServiceTest {
         Pessoa result = pessoaService.salvar(pessoa);
 
         assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("Deve retornar todas pessoas salvas")
+    void deveRetornarTodasPessoaSalvas() {
+        Pessoa pessoa1 = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa pessoa2 = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
+        pessoaRepository.saveAll(List.of(pessoa1, pessoa2));
+        List<Pessoa> result = pessoaService.buscarTodas();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("John Doe", result.getFirst().getNome());
+        assertEquals("Janet Doe", result.getLast().getNome());
+    }
+
+    @Test
+    @DisplayName("Deve lancar EntityNotFoundException em caso de lista vazia")
+    void deveLancarExcecao() {
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarTodas());
+
+        String expected = "Nenhuma pessoa salva";
+        String actual = exception.getMessage();
+
+        assertEquals(expected, actual);
     }
 }
