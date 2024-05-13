@@ -32,4 +32,9 @@ public class Pessoa {
     public LocalDate getDataNascimento() {
         return dataNascimento;
     }
+
+    public void editar(String nome, LocalDate dataNascimento) {
+        this.nome = nome;
+        this.dataNascimento = dataNascimento;
+    }
 }

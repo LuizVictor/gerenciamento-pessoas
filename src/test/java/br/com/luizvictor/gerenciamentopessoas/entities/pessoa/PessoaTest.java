@@ -17,9 +17,21 @@ class PessoaTest {
         assertEquals("John Doe", pessoa.getNome());
         assertEquals("1999-05-13", pessoa.getDataNascimento().toString());
     }
+
     @Test
     void testandoConstrutorDefault() {
         Pessoa pessoa = new Pessoa();
         assertNotNull(pessoa);
+    }
+
+    @Test
+    @DisplayName("Deve editar dados de uma pessoa")
+    void deveEditarPessoa() {
+        Pessoa pessoa = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
+        pessoa.editar("Jannet Doe", LocalDate.of(2000, 5, 13));
+
+        assertEquals(1L, pessoa.getId());
+        assertEquals("Jannet Doe", pessoa.getNome());
+        assertEquals("2000-05-13", pessoa.getDataNascimento().toString());
     }
 }
