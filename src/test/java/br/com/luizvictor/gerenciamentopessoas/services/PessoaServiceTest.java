@@ -59,4 +59,28 @@ class PessoaServiceTest {
 
         assertEquals(expected, actual);
     }
+
+
+    @Test
+    @DisplayName("Deve buscar pessoa por id")
+    void deveBuscarPessoaPorId() {
+        Pessoa pessoa1 = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa pessoa2 = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
+        List<Pessoa> pessoas = pessoaRepository.saveAll(List.of(pessoa1, pessoa2));
+        Pessoa result = pessoaService.buscarPorId(pessoas.getFirst().getId());
+
+        assertNotNull(result);
+        assertEquals("John Doe", result.getNome());
+    }
+
+    @Test
+    @DisplayName("Deve lancar EntityNotFoundException em caso de id nao encontrado")
+    void deveLancarExcecaoEmCasoDeIdNaoEncontrado() {
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPorId(1L));
+
+        String expected = "Nenhuma pessoa encontrada";
+        String actual = exception.getMessage();
+
+        assertEquals(expected, actual);
+    }
 }

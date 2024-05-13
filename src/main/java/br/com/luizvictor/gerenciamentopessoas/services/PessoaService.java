@@ -23,7 +23,7 @@ public class PessoaService {
     @Transactional
     public Pessoa salvar(Pessoa pessoa) {
         try {
-            logger.info("Salvado pessoa: {}" , pessoa.getNome());
+            logger.info("Salvado pessoa: {}", pessoa.getNome());
             return pessoaRepository.save(pessoa);
         } catch (DataAccessException exception) {
             logger.error("Nao foi possivel salvar pessoa: {}", exception.getMessage());
@@ -39,5 +39,12 @@ public class PessoaService {
         }
 
         return pessoas;
+    }
+
+    public Pessoa buscarPorId(Long id) {
+        logger.info("Buscando pessoa de ID: {}", id);
+        return pessoaRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Nenhuma pessoa encontrada")
+        );
     }
 }
