@@ -1,8 +1,11 @@
 package br.com.luizvictor.gerenciamentopessoas.entities.pessoa;
 
+import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "pessoas")
@@ -12,6 +15,8 @@ public class Pessoa {
     private Long id;
     private String nome;
     private LocalDate dataNascimento;
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<Endereco> enderecos = new ArrayList<>();
 
     public Pessoa() { }
 
@@ -31,6 +36,15 @@ public class Pessoa {
 
     public LocalDate getDataNascimento() {
         return dataNascimento;
+    }
+
+    public List<Endereco> getEnderecos() {
+        return enderecos;
+    }
+
+    public void adicionarEndereco(Endereco endereco) {
+        endereco.adicionarPessoa(this);
+        this.enderecos.add(endereco);
     }
 
     public void editar(String nome, LocalDate dataNascimento) {

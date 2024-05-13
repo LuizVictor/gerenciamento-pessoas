@@ -1,5 +1,6 @@
 package br.com.luizvictor.gerenciamentopessoas.entities.pessoa;
 
+import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,5 +34,23 @@ class PessoaTest {
         assertEquals(1L, pessoa.getId());
         assertEquals("Jannet Doe", pessoa.getNome());
         assertEquals("2000-05-13", pessoa.getDataNascimento().toString());
+    }
+
+    @Test
+    @DisplayName("Deve adicionar enderco")
+    void deveAdicionarEndereco() {
+        Pessoa pessoa = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
+        Endereco endereco = new Endereco(
+                1L,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        pessoa.adicionarEndereco(endereco);
+
+        assertEquals(1, pessoa.getEnderecos().size());
     }
 }
