@@ -3,6 +3,7 @@ package br.com.luizvictor.gerenciamentopessoas.resources;
 import br.com.luizvictor.gerenciamentopessoas.dtos.PessoaDto;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.services.PessoaService;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pessoas")
@@ -30,6 +32,17 @@ public class PessoaResource {
         } catch (Exception exception) {
             log.error(exception.getMessage());
             return ResponseEntity.unprocessableEntity().build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Pessoa>> getPessoas() {
+        try {
+            List<Pessoa> pessoas = pessoaService.buscarTodas();
+            return ResponseEntity.ok(pessoas);
+        } catch (EntityNotFoundException exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 }
