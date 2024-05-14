@@ -121,6 +121,7 @@ class PessoaServiceTest {
         assertEquals(result.getId(), enderecos.getLast().getPessoa().getId());
     }
 
+
     @Test
     @DisplayName("Deve retornar todos enderecos de uma pessoa")
     void deveBuscarTodosEnderecos() {
@@ -220,5 +221,28 @@ class PessoaServiceTest {
         Endereco resultEndereco = pessoaService.editarEndereco(enderecoEditado);
         assertEquals(enderecoEditado.getLogradouro(), resultEndereco.getLogradouro());
         assertEquals(result.getId(), resultEndereco.getPessoa().getId());
+    }
+
+    @Test
+    @DisplayName("Deve adicionar endereco como principal")
+    void deveSalvarEnderecoComoPrincipal() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+        List<Endereco> enderecos = pessoaService.buscarPorId(result.getId()).getEnderecos();
+        Long enderecoId = enderecos.getFirst().getPessoa().getId();
+        pessoaService.adicionarEnderecoPrincipal(result.getId(), enderecoId);
+
+        assertEquals(pessoaService.buscarPorId(result.getId()).getEnderecoPrincipal(), enderecoId);
     }
 }

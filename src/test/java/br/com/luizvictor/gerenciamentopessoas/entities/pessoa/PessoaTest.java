@@ -37,7 +37,7 @@ class PessoaTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar enderco")
+    @DisplayName("Deve adicionar endereco")
     void deveAdicionarEndereco() {
         Pessoa pessoa = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
         Endereco endereco = new Endereco(
@@ -52,5 +52,25 @@ class PessoaTest {
         pessoa.adicionarEndereco(endereco);
 
         assertEquals(1, pessoa.getEnderecos().size());
+    }
+
+    @Test
+    @DisplayName("Deve adicionar endereco como principal")
+    void deveAdicionarEnderecoPrincipal() {
+        Pessoa pessoa = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
+        Endereco endereco = new Endereco(
+                1L,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        pessoa.adicionarEndereco(endereco);
+        pessoa.adicionaEnderecoPrincipal(endereco.getId());
+
+        assertEquals(1, pessoa.getEnderecos().size());
+        assertEquals(pessoa.getEnderecoPrincipal(), endereco.getId());
     }
 }

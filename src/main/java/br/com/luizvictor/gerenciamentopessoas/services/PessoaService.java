@@ -70,8 +70,10 @@ public class PessoaService {
         try {
             Pessoa pessoa = buscarPorId(id);
             pessoa.adicionarEndereco(endereco);
+
             Pessoa result = pessoaRepository.save(pessoa);
             Long enderecoId = result.getEnderecos().getLast().getId();
+
             logger.info("Adicionando endereco de ID {} a pessoa de ID {}", enderecoId, pessoa.getId());
         } catch (DataAccessException exception) {
             logger.error("Nao foi adicionar enderco: {}", exception.getMessage());
@@ -117,6 +119,21 @@ public class PessoaService {
             return enderecoRepository.save(result);
         } catch (DataAccessException exception) {
             logger.error("Nao foi possivel editar endereco: {}", exception.getMessage());
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
+
+    @Transactional
+    public void adicionarEnderecoPrincipal(Long idPessoa, Long idEndereco) {
+        try {
+            Pessoa pessoa = buscarPorId(idPessoa);
+            pessoa.adicionaEnderecoPrincipal(idEndereco);
+
+            pessoaRepository.save(pessoa);
+
+            logger.info("Endereco de ID {} foi adicionado como principal de pessoa com ID {}", idEndereco, idPessoa);
+        } catch (DataAccessException exception) {
+            logger.error("Nao foi possivel adicionar endereco como principal: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }

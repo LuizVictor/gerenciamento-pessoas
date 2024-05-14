@@ -17,6 +17,7 @@ public class Pessoa {
     private LocalDate dataNascimento;
     @OneToMany(mappedBy = "pessoa", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Endereco> enderecos = new ArrayList<>();
+    private Long enderecoPrincipal;
 
     public Pessoa() { }
 
@@ -42,13 +43,21 @@ public class Pessoa {
         return enderecos;
     }
 
-    public void adicionarEndereco(Endereco endereco) {
-        endereco.adicionarPessoa(this);
-        this.enderecos.add(endereco);
+    public Long getEnderecoPrincipal() {
+        return enderecoPrincipal;
     }
 
     public void editar(String nome, LocalDate dataNascimento) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+    }
+
+    public void adicionarEndereco(Endereco endereco) {
+        endereco.adicionarPessoa(this);
+        this.enderecos.add(endereco);
+    }
+
+    public void adicionaEnderecoPrincipal(Long enderecoId) {
+        this.enderecoPrincipal = enderecoId;
     }
 }
