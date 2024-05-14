@@ -1,5 +1,6 @@
 package br.com.luizvictor.gerenciamentopessoas.services;
 
+import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -95,5 +96,28 @@ class PessoaServiceTest {
 
         assertEquals(pessoaEditada.getNome(), resultEditado.getNome());
         assertEquals(pessoaEditada.getDataNascimento(), resultEditado.getDataNascimento());
+    }
+
+    @Test
+    @DisplayName("Deve adicionar endereco")
+    void deveAdicionarEndereco() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+        List<Endereco> enderecos = pessoaService.buscarPorId(result.getId()).getEnderecos();
+
+        assertEquals(2, enderecos.size());
+        assertEquals(result.getId(), enderecos.getFirst().getPessoa().getId());
+        assertEquals(result.getId(), enderecos.getLast().getPessoa().getId());
     }
 }

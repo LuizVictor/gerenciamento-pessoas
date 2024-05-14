@@ -15,7 +15,7 @@ public class Pessoa {
     private Long id;
     private String nome;
     private LocalDate dataNascimento;
-    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pessoa", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Endereco> enderecos = new ArrayList<>();
 
     public Pessoa() { }

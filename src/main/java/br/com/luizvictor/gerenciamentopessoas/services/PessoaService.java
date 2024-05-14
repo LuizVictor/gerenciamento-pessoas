@@ -1,5 +1,6 @@
 package br.com.luizvictor.gerenciamentopessoas.services;
 
+import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -57,6 +58,20 @@ public class PessoaService {
             return pessoaRepository.save(result);
         } catch (DataAccessException exception) {
             logger.error("Nao foi possivel editar pessoa: {}", exception.getMessage());
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
+
+    @Transactional
+    public void adicionarEndereco(Long id, Endereco endereco) {
+        try {
+            Pessoa pessoa = buscarPorId(id);
+            pessoa.adicionarEndereco(endereco);
+            Pessoa result = pessoaRepository.save(pessoa);
+            Long enderecoId = result.getEnderecos().getLast().getId();
+            logger.info("Adicionando endereco de ID {} a pessoa de ID {}", enderecoId, pessoa.getId());
+        } catch (DataAccessException exception) {
+            logger.error("Nao foi adicionar enderco: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
