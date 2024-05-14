@@ -53,9 +53,9 @@ public class PessoaService {
     }
 
     @Transactional
-    public Pessoa editar(Long id, Pessoa pessoa) {
+    public Pessoa editar(Pessoa pessoa) {
         try {
-            Pessoa result = buscarPorId(id);
+            Pessoa result = buscarPorId(pessoa.getId());
 
             result.editar(pessoa.getNome(), pessoa.getDataNascimento());
             return pessoaRepository.save(result);
@@ -90,5 +90,14 @@ public class PessoaService {
 
         logger.info("Retornando enderecos da pessoa de ID {}", pessoaId);
         return enderecos;
+    }
+
+    public Endereco buscarEnderecoPorId(Long pessoaId, Long enderecoId) {
+        buscarPorId(pessoaId);
+
+        logger.info("Buscando por endereco de ID {}", enderecoId);
+        return enderecoRepository.findById(enderecoId).orElseThrow(
+                () -> new EntityNotFoundException("Endereco nao encontrado")
+        );
     }
 }

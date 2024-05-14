@@ -91,8 +91,8 @@ class PessoaServiceTest {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
 
-        Pessoa pessoaEditada = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
-        Pessoa resultEditado = pessoaService.editar(result.getId(), pessoaEditada);
+        Pessoa pessoaEditada = new Pessoa(result.getId(), "Janet Doe", LocalDate.of(2000, 5, 13));
+        Pessoa resultEditado = pessoaService.editar(pessoaEditada);
 
         assertEquals(pessoaEditada.getNome(), resultEditado.getNome());
         assertEquals(pessoaEditada.getDataNascimento(), resultEditado.getDataNascimento());
@@ -152,6 +152,41 @@ class PessoaServiceTest {
         Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarTodosEnderecos(result.getId()));
 
         String expected = "Nenhuma endereco salvo";
+        String actual = exception.getMessage();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Deve retornar um endereco")
+    void deveRetornarUmEndereco() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+
+        Long enderecoId = pessoaService.buscarPorId(result.getId()).getEnderecos().getFirst().getId();
+
+        Endereco resultEndereco = pessoaService.buscarEnderecoPorId(result.getId(), enderecoId);
+        assertEquals(endereco.getLogradouro(), resultEndereco.getLogradouro());
+        assertEquals(result.getId(), resultEndereco.getPessoa().getId());
+    }
+
+    @Test
+    @DisplayName("Deve lancar EntityNotFoundException em caso de endereco nao encontrado")
+    void deveLancarExcecaoEmCasoDeEnderecoNaoEncontrado() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarEnderecoPorId(result.getId(), 1L));
+
+        String expected = "Endereco nao encontrado";
         String actual = exception.getMessage();
 
         assertEquals(expected, actual);
