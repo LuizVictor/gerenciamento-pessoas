@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
@@ -77,6 +78,31 @@ class PessoaResourceTest {
     @DisplayName("Nao deve retornar pessoas")
     void naoDeveRetornarTodasPessoa() throws Exception {
         mvc.perform(get("/api/pessoas").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+        assertEquals(0, pessoaRepository.count());
+    }
+
+    @Test
+    @DisplayName("Deve buscar pessoa por id")
+    void deveBuscarPessoaPorId() throws Exception {
+        Pessoa pessoa1 = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa pessoa2 = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
+        List<Pessoa> pessoas = pessoaRepository.saveAll(List.of(pessoa1, pessoa2));
+        Pessoa pessoa = pessoas.getFirst();
+
+        mvc.perform(get("/api/pessoas/{id}", pessoa.getId()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(pessoa.getId()))
+        .andExpect(jsonPath("$.nome").value(pessoa.getNome()));
+
+        assertEquals(2, pessoaRepository.count());
+    }
+
+    @Test
+    @DisplayName("Nao deve buscar pessoa por id invalido")
+    void naoDeveBuscarPessoaPorIdInvalido() throws Exception {
+        mvc.perform(get("/api/pessoas/{id}", 1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
         assertEquals(0, pessoaRepository.count());
     }
 }

@@ -45,4 +45,15 @@ public class PessoaResource {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Pessoa> getPessoaById(@PathVariable Long id) {
+        try {
+            Pessoa pessoa = pessoaService.buscarPorId(id);
+            return ResponseEntity.ok(pessoa);
+        } catch (EntityNotFoundException exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
