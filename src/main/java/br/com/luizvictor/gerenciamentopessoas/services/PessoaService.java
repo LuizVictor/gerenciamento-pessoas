@@ -2,6 +2,7 @@ package br.com.luizvictor.gerenciamentopessoas.services;
 
 import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
+import br.com.luizvictor.gerenciamentopessoas.repositories.EnderecoRepository;
 import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -15,10 +16,12 @@ import java.util.List;
 @Service
 public class PessoaService {
     private final PessoaRepository pessoaRepository;
+    private final EnderecoRepository enderecoRepository;
     private final Logger logger = LoggerFactory.getLogger(PessoaService.class);
 
-    public PessoaService(PessoaRepository pessoaRepository) {
+    public PessoaService(PessoaRepository pessoaRepository, EnderecoRepository enderecoRepository) {
         this.pessoaRepository = pessoaRepository;
+        this.enderecoRepository = enderecoRepository;
     }
 
     @Transactional
@@ -74,5 +77,18 @@ public class PessoaService {
             logger.error("Nao foi adicionar enderco: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
+    }
+
+    public List<Endereco> buscarTodosEnderecos(Long pessoaId) {
+        buscarPorId(pessoaId);
+        List<Endereco> enderecos = enderecoRepository.findByPessoaId(pessoaId);
+
+        if (enderecos.isEmpty()) {
+            logger.error("Nenhuma endereco salvo");
+            throw new EntityNotFoundException("Nenhuma endereco salvo");
+        }
+
+        logger.info("Retornando enderecos da pessoa de ID {}", pessoaId);
+        return enderecos;
     }
 }

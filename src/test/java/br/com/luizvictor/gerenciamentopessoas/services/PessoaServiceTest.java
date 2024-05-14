@@ -120,4 +120,40 @@ class PessoaServiceTest {
         assertEquals(result.getId(), enderecos.getFirst().getPessoa().getId());
         assertEquals(result.getId(), enderecos.getLast().getPessoa().getId());
     }
+
+    @Test
+    @DisplayName("Deve retornar todos enderecos de uma pessoa")
+    void deveBuscarTodosEnderecos() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+        List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(result.getId());
+
+        assertEquals(2, enderecos.size());
+        assertEquals(result.getId(), enderecos.getFirst().getPessoa().getId());
+        assertEquals(result.getId(), enderecos.getLast().getPessoa().getId());
+    }
+
+    @Test
+    @DisplayName("Deve lancar EntityNotFoundException em caso de enderecos vazio")
+    void deveLancarExcecaoEmCasoDeEnderecosVazio() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarTodosEnderecos(result.getId()));
+
+        String expected = "Nenhuma endereco salvo";
+        String actual = exception.getMessage();
+
+        assertEquals(expected, actual);
+    }
 }
