@@ -56,4 +56,28 @@ class EnderecoTest {
         assertEquals("John Doe", endereco.getPessoa().getNome());
         assertEquals("1999-05-13", endereco.getPessoa().getDataNascimento().toString());
     }
+
+    @Test
+    @DisplayName("Editando endereco")
+    void deveEditarEndereco() {
+        Endereco endereco = new Endereco(
+                1L,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        endereco.editar(
+                "Rua B",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+
+        assertEquals("Rua B", endereco.getLogradouro());
+    }
 }

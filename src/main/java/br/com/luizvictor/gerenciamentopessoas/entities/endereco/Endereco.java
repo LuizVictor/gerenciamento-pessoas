@@ -18,7 +18,8 @@ public class Endereco {
     @JoinColumn(name = "pessoa_id")
     private Pessoa pessoa;
 
-    public Endereco() {}
+    public Endereco() {
+    }
 
     public Endereco(Long id, String logradouro, String cep, int numero, String cidade, String estado) {
         this.id = id;
@@ -54,10 +55,18 @@ public class Endereco {
     }
 
     public Pessoa getPessoa() {
-       return pessoa;
+        return pessoa;
     }
 
     public void adicionarPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
+    }
+
+    public void editar(String logradouro, String cep, int numero, String cidade, String estado) {
+        this.logradouro = logradouro;
+        this.cep = cep;
+        this.numero = numero;
+        this.cidade = cidade;
+        this.estado = estado;
     }
 }

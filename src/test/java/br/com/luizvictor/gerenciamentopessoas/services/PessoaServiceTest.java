@@ -191,4 +191,34 @@ class PessoaServiceTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    @DisplayName("Deve editar um endereco")
+    void deveEditarUmEndereco() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+
+        Long enderecoId = pessoaService.buscarPorId(result.getId()).getEnderecos().getFirst().getId();
+        Endereco enderecoEditado = new Endereco(
+                enderecoId,
+                "Rua B",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        Endereco resultEndereco = pessoaService.editarEndereco(enderecoEditado);
+        assertEquals(enderecoEditado.getLogradouro(), resultEndereco.getLogradouro());
+        assertEquals(result.getId(), resultEndereco.getPessoa().getId());
+    }
 }

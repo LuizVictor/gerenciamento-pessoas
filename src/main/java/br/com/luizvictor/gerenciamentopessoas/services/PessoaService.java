@@ -100,4 +100,24 @@ public class PessoaService {
                 () -> new EntityNotFoundException("Endereco nao encontrado")
         );
     }
+
+    @Transactional
+    public Endereco editarEndereco(Endereco endereco) {
+        try {
+            Endereco result = enderecoRepository.getReferenceById(endereco.getId());
+            result.editar(
+                    endereco.getLogradouro(),
+                    endereco.getCep(),
+                    endereco.getNumero(),
+                    endereco.getCidade(),
+                    endereco.getEstado()
+            );
+
+            logger.info("Endereco de ID {} foi editado", endereco.getId());
+            return enderecoRepository.save(result);
+        } catch (DataAccessException exception) {
+            logger.error("Nao foi possivel editar endereco: {}", exception.getMessage());
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
 }
