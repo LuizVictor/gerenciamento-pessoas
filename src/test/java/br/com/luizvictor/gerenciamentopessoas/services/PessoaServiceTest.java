@@ -83,4 +83,17 @@ class PessoaServiceTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    @DisplayName("Deve editar pessoa")
+    void deveEditarPessoa() {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Pessoa pessoaEditada = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
+        Pessoa resultEditado = pessoaService.editar(result.getId(), pessoaEditada);
+
+        assertEquals(pessoaEditada.getNome(), resultEditado.getNome());
+        assertEquals(pessoaEditada.getDataNascimento(), resultEditado.getDataNascimento());
+    }
 }

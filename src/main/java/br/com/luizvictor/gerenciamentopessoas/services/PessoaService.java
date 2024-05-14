@@ -47,4 +47,17 @@ public class PessoaService {
                 () -> new EntityNotFoundException("Nenhuma pessoa encontrada")
         );
     }
+
+    @Transactional
+    public Pessoa editar(Long id, Pessoa pessoa) {
+        try {
+            Pessoa result = buscarPorId(id);
+
+            result.editar(pessoa.getNome(), pessoa.getDataNascimento());
+            return pessoaRepository.save(result);
+        } catch (DataAccessException exception) {
+            logger.error("Nao foi possivel editar pessoa: {}", exception.getMessage());
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
 }
