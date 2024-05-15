@@ -4,7 +4,6 @@ import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +42,7 @@ class PessoaServiceTest {
         Pessoa pessoa1 = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa pessoa2 = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
         pessoaRepository.saveAll(List.of(pessoa1, pessoa2));
+
         List<Pessoa> result = pessoaService.buscarTodas();
 
         assertNotNull(result);
@@ -52,11 +52,11 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lancar EntityNotFoundException em caso de lista vazia")
+    @DisplayName("Deve lançar EntityNotFoundException em caso de lista vazia")
     void deveLancarExcecao() {
         Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarTodas());
 
-        String expected = "Nenhuma pessoa salva";
+        String expected = "Nenhuma pessoa encontrada";
         String actual = exception.getMessage();
 
         assertEquals(expected, actual);
@@ -69,6 +69,7 @@ class PessoaServiceTest {
         Pessoa pessoa1 = new Pessoa(1L, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa pessoa2 = new Pessoa(null, "Janet Doe", LocalDate.of(2000, 5, 13));
         List<Pessoa> pessoas = pessoaRepository.saveAll(List.of(pessoa1, pessoa2));
+
         Pessoa result = pessoaService.buscarPorId(pessoas.getFirst().getId());
 
         assertNotNull(result);
@@ -76,7 +77,7 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lancar EntityNotFoundException em caso de id nao encontrado")
+    @DisplayName("Deve lançar EntityNotFoundException em caso de id não encontrado")
     void deveLancarExcecaoEmCasoDeIdNaoEncontrado() {
         Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPorId(1L));
 
@@ -100,7 +101,7 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar endereco")
+    @DisplayName("Deve adicionar endereços")
     void deveAdicionarEndereco() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
@@ -113,8 +114,10 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
+
         pessoaService.adicionarEndereco(result.getId(), endereco);
         pessoaService.adicionarEndereco(result.getId(), endereco);
+
         List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(result.getId());
 
         assertEquals(2, enderecos.size());
@@ -124,7 +127,7 @@ class PessoaServiceTest {
 
 
     @Test
-    @DisplayName("Deve retornar todos enderecos de uma pessoa")
+    @DisplayName("Deve retornar todos endereços de uma pessoa")
     void deveBuscarTodosEnderecos() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
@@ -140,6 +143,7 @@ class PessoaServiceTest {
 
         pessoaService.adicionarEndereco(result.getId(), endereco);
         pessoaService.adicionarEndereco(result.getId(), endereco);
+
         List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(result.getId());
 
         assertEquals(2, enderecos.size());
@@ -148,20 +152,20 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lancar EntityNotFoundException em caso de enderecos vazio")
+    @DisplayName("Deve lançar EntityNotFoundException em caso de endereços vazio")
     void deveLancarExcecaoEmCasoDeEnderecosVazio() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
         Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarTodosEnderecos(result.getId()));
 
-        String expected = "Nenhuma endereco salvo";
+        String expected = "Nenhum endereço encontrado";
         String actual = exception.getMessage();
 
         assertEquals(expected, actual);
     }
 
     @Test
-    @DisplayName("Deve retornar um endereco")
+    @DisplayName("Deve retornar um endereço")
     void deveRetornarUmEndereco() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
@@ -173,6 +177,7 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
+
         Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
 
         Endereco resultEndereco = pessoaService.buscarEnderecoPorId(result.getId(), idEndereco);
@@ -181,20 +186,20 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lancar EntityNotFoundException em caso de endereco nao encontrado")
+    @DisplayName("Deve lançar EntityNotFoundException em caso de endereço nao encontrado")
     void deveLancarExcecaoEmCasoDeEnderecoNaoEncontrado() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
         Exception exception = assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarEnderecoPorId(result.getId(), 1L));
 
-        String expected = "Endereco nao encontrado";
+        String expected = "Nenhum endereço encontrado";
         String actual = exception.getMessage();
 
         assertEquals(expected, actual);
     }
 
     @Test
-    @DisplayName("Deve editar um endereco")
+    @DisplayName("Deve editar um endereço")
     void deveEditarUmEndereco() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
@@ -206,6 +211,7 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
+
         Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
 
         Endereco enderecoEditado = new Endereco(
@@ -223,7 +229,7 @@ class PessoaServiceTest {
     }
 
     @Test
-    @DisplayName("Deve adicionar endereco como principal")
+    @DisplayName("Deve adicionar endereço como principal")
     void deveSalvarEnderecoComoPrincipal() {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);

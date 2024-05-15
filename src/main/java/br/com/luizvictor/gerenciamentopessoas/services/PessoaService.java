@@ -27,10 +27,11 @@ public class PessoaService {
     @Transactional
     public Pessoa salvar(Pessoa pessoa) {
         try {
-            logger.info("Salvado pessoa: {}", pessoa.getNome());
-            return pessoaRepository.save(pessoa);
+            Pessoa result = pessoaRepository.save(pessoa);
+            logger.info("Pessoa salva com sucesso: ID = {}, Nome = {}", result.getId(), result.getNome());
+            return result;
         } catch (DataAccessException exception) {
-            logger.error("Nao foi possivel salvar pessoa: {}", exception.getMessage());
+            logger.error("Erro ao salvar pessoa: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -38,18 +39,20 @@ public class PessoaService {
     public List<Pessoa> buscarTodas() {
         List<Pessoa> pessoas = pessoaRepository.findAll();
         if (pessoas.isEmpty()) {
-            logger.error("Nenhuma pessoa salva");
-            throw new EntityNotFoundException("Nenhuma pessoa salva");
+            logger.error("Nenhuma pessoa encontrada");
+            throw new EntityNotFoundException("Nenhuma pessoa encontrada");
         }
 
+        logger.info("Encontradas {} pessoas", pessoas.size());
         return pessoas;
     }
 
     public Pessoa buscarPorId(Long id) {
-        logger.info("Buscando pessoa de ID: {}", id);
-        return pessoaRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Nenhuma pessoa encontrada")
-        );
+        logger.info("Buscando pessoa com ID: {}", id);
+        return pessoaRepository.findById(id).orElseThrow(() -> {
+            logger.error("Nenhuma pessoa encontrada com ID: {}", id);
+            return new EntityNotFoundException("Nenhuma pessoa encontrada");
+        });
     }
 
     @Transactional
@@ -57,10 +60,14 @@ public class PessoaService {
         try {
             Pessoa result = pessoaRepository.getReferenceById(pessoa.getId());
             result.editar(pessoa.getNome(), pessoa.getDataNascimento());
-            return pessoaRepository.save(result);
+
+            Pessoa editada = pessoaRepository.save(result);
+
+            logger.info("Pessoa editada com sucesso: ID = {}", editada.getId());
+            return editada;
         } catch (DataAccessException exception) {
-            logger.error("Nao foi possivel editar pessoa: {}", exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
+            logger.error("Erro ao editar pessoa: {}", exception.getMessage());
+            throw new RuntimeException("Erro ao editar pessoa");
         }
     }
 
@@ -71,12 +78,12 @@ public class PessoaService {
             pessoa.adicionarEndereco(endereco);
 
             Pessoa result = pessoaRepository.save(pessoa);
-            Long enderecoId = result.getEnderecos().getLast().getId();
+            Long idEndereco = result.getEnderecos().getLast().getId();
 
-            logger.info("Adicionando endereco de ID {} a pessoa de ID {}", enderecoId, pessoa.getId());
-            return enderecoId;
+            logger.info("Endereço adicionado com sucesso: PessoaID = {}, EndereçoID = {}", pessoa.getId(), idEndereco);
+            return idEndereco;
         } catch (DataAccessException exception) {
-            logger.error("Nao foi possivel adicionar endereco: {}", exception.getMessage());
+            logger.error("Erro ao adicionar endereço: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
@@ -86,20 +93,21 @@ public class PessoaService {
         List<Endereco> enderecos = enderecoRepository.findByPessoaId(pessoaId);
 
         if (enderecos.isEmpty()) {
-            logger.error("Nenhuma endereco salvo");
-            throw new EntityNotFoundException("Nenhuma endereco salvo");
+            logger.error("Nenhum endereço encontrado");
+            throw new EntityNotFoundException("Nenhum endereço encontrado");
         }
 
-        logger.info("Retornando enderecos da pessoa de ID {}", pessoaId);
+        logger.info("Encontrados {} endereços para pessoa com ID: {}", enderecos.size(), pessoaId);
         return enderecos;
     }
 
     public Endereco buscarEnderecoPorId(Long pessoaId, Long enderecoId) {
         pessoaRepository.getReferenceById(pessoaId);
-        logger.info("Buscando por endereco de ID {}", enderecoId);
-        return enderecoRepository.findById(enderecoId).orElseThrow(
-                () -> new EntityNotFoundException("Endereco nao encontrado")
-        );
+        logger.info("Buscando por endereço com ID: {}", enderecoId);
+        return enderecoRepository.findById(enderecoId).orElseThrow( () -> {
+            logger.error("Nenhum endereço encontrado com ID: {}", enderecoId);
+            return new EntityNotFoundException("Nenhum endereço encontrado");
+        });
     }
 
     @Transactional
@@ -114,11 +122,11 @@ public class PessoaService {
                     endereco.getEstado()
             );
 
-            logger.info("Endereco de ID {} foi editado", endereco.getId());
+            logger.info("Endereço editado com sucesso: ID = {}", endereco.getId());
             return enderecoRepository.save(result);
         } catch (DataAccessException exception) {
-            logger.error("Nao foi possivel editar endereco: {}", exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
+            logger.error("Erro ao editar endereço: {}", exception.getMessage());
+            throw new RuntimeException("Erro ao editar endereço");
         }
     }
 
@@ -130,10 +138,10 @@ public class PessoaService {
 
             pessoaRepository.save(pessoa);
 
-            logger.info("Endereco de ID {} foi adicionado como principal de pessoa com ID {}", idEndereco, idPessoa);
+            logger.info("Endereço principal adicionado: PessoaID = {}, EndereçoID = {}", idEndereco, idPessoa);
         } catch (DataAccessException exception) {
-            logger.error("Nao foi possivel adicionar endereco como principal: {}", exception.getMessage());
-            throw new RuntimeException(exception.getMessage());
+            logger.error("Erro adicionar endereço como principal: {}", exception.getMessage());
+            throw new RuntimeException("Erro ao adicionar endereço com principal");
         }
     }
 }
