@@ -142,7 +142,7 @@ public class PessoaResource {
         }
     }
 
-    @PutMapping("/{idPessoa}/adicionar-principal/{idEndereco}")
+    @PatchMapping("/{idPessoa}/adicionar-principal/{idEndereco}")
     public ResponseEntity adicionarPrincipal(@PathVariable Long idPessoa, @PathVariable Long idEndereco) {
         try {
             pessoaService.adicionarEnderecoPrincipal(idPessoa, idEndereco);

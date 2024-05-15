@@ -163,7 +163,7 @@ class PessoaResourceTest {
         mvc.perform(put("/api/pessoas/{id}/adicionar-endereco", result.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsBytes(dto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         assertEquals(1, pessoaRepository.count());
         assertEquals(1, enderecoRepository.count());
@@ -310,9 +310,9 @@ class PessoaResourceTest {
         );
         Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
 
-        mvc.perform(put("/api/pessoas/{idPessoa}/adicionar-principal/{idEndereco}", result.getId(), idEndereco)
+        mvc.perform(patch("/api/pessoas/{idPessoa}/adicionar-principal/{idEndereco}", result.getId(), idEndereco)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         assertEquals(1, pessoaRepository.count());
         assertEquals(1, enderecoRepository.count());
