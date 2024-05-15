@@ -32,7 +32,7 @@ public class PessoaResource {
             Pessoa result = pessoaService.salvar(pessoa);
             return ResponseEntity.created(URI.create("/api/pessoa/" + result.getId())).body(result);
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error("Erro ao salvar pessoa: ", exception);
             return ResponseEntity.unprocessableEntity().build();
         }
     }
@@ -43,7 +43,7 @@ public class PessoaResource {
             List<Pessoa> pessoas = pessoaService.buscarTodas();
             return ResponseEntity.ok(pessoas);
         } catch (EntityNotFoundException exception) {
-            log.error(exception.getMessage());
+            log.error("Nenhuma pessoa encontrada: ", exception);
             return ResponseEntity.notFound().build();
         }
     }
@@ -54,7 +54,7 @@ public class PessoaResource {
             Pessoa pessoa = pessoaService.buscarPorId(id);
             return ResponseEntity.ok(pessoa);
         } catch (EntityNotFoundException exception) {
-            log.error(exception.getMessage());
+            log.error("Nenhuma pessoa encontrada: ", exception);
             return ResponseEntity.notFound().build();
         }
     }
@@ -65,6 +65,9 @@ public class PessoaResource {
             Pessoa pessoa = new Pessoa(id, data.nome(), LocalDate.parse(data.dataNascimento()));
             Pessoa result = pessoaService.editar(pessoa);
             return ResponseEntity.ok(result);
+        } catch (EntityNotFoundException exception) {
+            log.error("Nenhuma pessoa encontrada: ", exception);
+            return ResponseEntity.notFound().build();
         } catch (Exception exception) {
             log.error(exception.getMessage());
             return ResponseEntity.unprocessableEntity().build();
@@ -85,8 +88,11 @@ public class PessoaResource {
 
             pessoaService.adicionarEndereco(id, endereco);
             return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException exception) {
+            log.error("Nenhuma pessoa encontrada: ", exception);
+            return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error("Erro ao adicionar endereço: ", exception);
             return ResponseEntity.unprocessableEntity().build();
         }
     }
@@ -96,8 +102,8 @@ public class PessoaResource {
         try {
             List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(id);
             return ResponseEntity.ok(enderecos);
-        } catch (Exception exception) {
-            log.error(exception.getMessage());
+        } catch (EntityNotFoundException exception) {
+            log.error("Nenhuma pessoa encontrada: ", exception);
             return ResponseEntity.notFound().build();
         }
     }
@@ -107,8 +113,8 @@ public class PessoaResource {
         try {
             Endereco endereco = pessoaService.buscarEnderecoPorId(idPessoa, idEndereco);
             return ResponseEntity.ok(endereco);
-        } catch (Exception exception) {
-            log.error(exception.getMessage());
+        } catch (EntityNotFoundException exception) {
+            log.error("Nenhuma pessoa encontrada: ", exception);
             return ResponseEntity.notFound().build();
         }
     }
@@ -127,8 +133,11 @@ public class PessoaResource {
 
             Endereco result = pessoaService.editarEndereco(endereco);
             return ResponseEntity.ok(result);
+        } catch (EntityNotFoundException exception) {
+            log.error("Nenhuma endereço encontrada: ", exception);
+            return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error("Erro ao editar endereço: ", exception);
             return ResponseEntity.unprocessableEntity().build();
         }
     }
@@ -138,8 +147,11 @@ public class PessoaResource {
         try {
             pessoaService.adicionarEnderecoPrincipal(idPessoa, idEndereco);
             return ResponseEntity.ok().build();
+        } catch (EntityNotFoundException exception) {
+            log.error("Endereço ou pessoa nao encontrado", exception);
+            return ResponseEntity.notFound().build();
         } catch (Exception exception) {
-            log.error(exception.getMessage());
+            log.error("Erro ao adicionar endereço como principal: ", exception);
             return ResponseEntity.notFound().build();
         }
     }
