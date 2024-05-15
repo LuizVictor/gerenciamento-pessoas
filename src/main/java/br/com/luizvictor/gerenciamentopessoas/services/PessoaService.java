@@ -55,8 +55,7 @@ public class PessoaService {
     @Transactional
     public Pessoa editar(Pessoa pessoa) {
         try {
-            Pessoa result = buscarPorId(pessoa.getId());
-
+            Pessoa result = pessoaRepository.getReferenceById(pessoa.getId());
             result.editar(pessoa.getNome(), pessoa.getDataNascimento());
             return pessoaRepository.save(result);
         } catch (DataAccessException exception) {

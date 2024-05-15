@@ -91,8 +91,8 @@ class PessoaResourceTest {
 
         mvc.perform(get("/api/pessoas/{id}", pessoa.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(pessoa.getId()))
-        .andExpect(jsonPath("$.nome").value(pessoa.getNome()));
+                .andExpect(jsonPath("$.id").value(pessoa.getId()))
+                .andExpect(jsonPath("$.nome").value(pessoa.getNome()));
 
         assertEquals(2, pessoaRepository.count());
     }
@@ -104,5 +104,38 @@ class PessoaResourceTest {
                 .andExpect(status().isNotFound());
 
         assertEquals(0, pessoaRepository.count());
+    }
+
+    @Test
+    @DisplayName("Deve editar pessoa")
+    void deveEditarPessoa() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        PessoaDto dto = new PessoaDto("Janet Doe", "2000-05-13");
+
+        mvc.perform(put("/api/pessoas/{id}", result.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(result.getId()))
+                .andExpect(jsonPath("$.nome").value(dto.nome()))
+                .andExpect(jsonPath("$.dataNascimento").value(dto.dataNascimento()));
+
+        assertEquals(1, pessoaRepository.count());
+    }
+
+    @Test
+    @DisplayName("Nao deve editar pessoa")
+    void naoDveEditarPessoa() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+        PessoaDto dto = new PessoaDto("Janet Doe", "2000-5-13");
+
+        mvc.perform(put("/api/pessoas/{id}", result.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(dto)))
+                .andExpect(status().isUnprocessableEntity());
+
+        assertEquals(1, pessoaRepository.count());
     }
 }

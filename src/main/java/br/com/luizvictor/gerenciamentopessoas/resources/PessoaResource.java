@@ -56,4 +56,16 @@ public class PessoaResource {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Pessoa> editarPessoa(@PathVariable Long id, @RequestBody PessoaDto data) {
+        try {
+            Pessoa pessoa = new Pessoa(id, data.nome(), LocalDate.parse(data.dataNascimento()));
+            Pessoa result = pessoaService.editar(pessoa);
+            return ResponseEntity.ok(result);
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+    }
 }
