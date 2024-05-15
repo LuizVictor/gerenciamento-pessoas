@@ -1,6 +1,7 @@
 package br.com.luizvictor.gerenciamentopessoas.entities.endereco;
 
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,7 @@ public class Endereco {
     private String estado;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pessoa_id")
+    @JsonBackReference
     private Pessoa pessoa;
 
     public Endereco() {

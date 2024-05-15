@@ -1,6 +1,7 @@
 package br.com.luizvictor.gerenciamentopessoas.entities.pessoa;
 
 import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,7 +16,8 @@ public class Pessoa {
     private Long id;
     private String nome;
     private LocalDate dataNascimento;
-    @OneToMany(mappedBy = "pessoa", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pessoa",  cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Endereco> enderecos = new ArrayList<>();
     private Long enderecoPrincipal;
 

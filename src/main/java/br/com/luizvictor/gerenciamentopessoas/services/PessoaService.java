@@ -81,7 +81,7 @@ public class PessoaService {
     }
 
     public List<Endereco> buscarTodosEnderecos(Long pessoaId) {
-        buscarPorId(pessoaId);
+        pessoaRepository.getReferenceById(pessoaId);
         List<Endereco> enderecos = enderecoRepository.findByPessoaId(pessoaId);
 
         if (enderecos.isEmpty()) {

@@ -91,4 +91,14 @@ public class PessoaResource {
         }
     }
 
+    @GetMapping("/{id}/enderecos")
+    public ResponseEntity<List<Endereco>> buscarEnderecos(@PathVariable Long id) {
+        try {
+            List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(id);
+            return ResponseEntity.ok(enderecos);
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
