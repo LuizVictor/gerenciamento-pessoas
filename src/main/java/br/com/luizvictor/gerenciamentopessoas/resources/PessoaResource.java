@@ -1,6 +1,8 @@
 package br.com.luizvictor.gerenciamentopessoas.resources;
 
+import br.com.luizvictor.gerenciamentopessoas.dtos.EnderecoDto;
 import br.com.luizvictor.gerenciamentopessoas.dtos.PessoaDto;
+import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.services.PessoaService;
 import jakarta.persistence.EntityNotFoundException;
@@ -68,4 +70,25 @@ public class PessoaResource {
             return ResponseEntity.unprocessableEntity().build();
         }
     }
+
+    @PutMapping("/{id}/adicionar-endereco")
+    public ResponseEntity adicionarEndereco(@PathVariable Long id, @RequestBody EnderecoDto data) {
+        try {
+            Endereco endereco = new Endereco(
+                    null,
+                    data.logradouro(),
+                    data.cep(),
+                    data.numero(),
+                    data.cidade(),
+                    data.estado()
+            );
+
+            pessoaService.adicionarEndereco(id, endereco);
+            return ResponseEntity.ok().build();
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+    }
+
 }

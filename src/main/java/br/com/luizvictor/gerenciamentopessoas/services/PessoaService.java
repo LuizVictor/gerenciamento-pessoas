@@ -67,7 +67,7 @@ public class PessoaService {
     @Transactional
     public void adicionarEndereco(Long id, Endereco endereco) {
         try {
-            Pessoa pessoa = buscarPorId(id);
+            Pessoa pessoa = pessoaRepository.getReferenceById(id);
             pessoa.adicionarEndereco(endereco);
 
             Pessoa result = pessoaRepository.save(pessoa);
@@ -75,7 +75,7 @@ public class PessoaService {
 
             logger.info("Adicionando endereco de ID {} a pessoa de ID {}", enderecoId, pessoa.getId());
         } catch (DataAccessException exception) {
-            logger.error("Nao foi adicionar enderco: {}", exception.getMessage());
+            logger.error("Nao foi possivel adicionar endereco: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
         }
     }
