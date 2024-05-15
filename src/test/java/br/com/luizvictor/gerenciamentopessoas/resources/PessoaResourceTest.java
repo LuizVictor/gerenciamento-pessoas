@@ -293,4 +293,29 @@ class PessoaResourceTest {
         assertEquals(1, pessoaRepository.count());
         assertEquals(1, enderecoRepository.count());
     }
+
+    @Test
+    @DisplayName("Deve adicionar endereco como principal")
+    void deveAdicionarEnderecoComoPrincipal() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
+
+        mvc.perform(put("/api/pessoas/{idPessoa}/adicionar-principal/{idEndereco}", result.getId(), idEndereco)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(1, pessoaRepository.count());
+        assertEquals(1, enderecoRepository.count());
+        assertEquals(idEndereco, pessoaRepository.findById(result.getId()).get().getEnderecoPrincipal());
+    }
 }

@@ -125,7 +125,7 @@ public class PessoaService {
     @Transactional
     public void adicionarEnderecoPrincipal(Long idPessoa, Long idEndereco) {
         try {
-            Pessoa pessoa = buscarPorId(idPessoa);
+            Pessoa pessoa = pessoaRepository.getReferenceById(idPessoa);
             pessoa.adicionaEnderecoPrincipal(idEndereco);
 
             pessoaRepository.save(pessoa);

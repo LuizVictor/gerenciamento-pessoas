@@ -132,4 +132,15 @@ public class PessoaResource {
             return ResponseEntity.unprocessableEntity().build();
         }
     }
+
+    @PutMapping("/{idPessoa}/adicionar-principal/{idEndereco}")
+    public ResponseEntity adicionarPrincipal(@PathVariable Long idPessoa, @PathVariable Long idEndereco) {
+        try {
+            pessoaService.adicionarEnderecoPrincipal(idPessoa, idEndereco);
+            return ResponseEntity.ok().build();
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
