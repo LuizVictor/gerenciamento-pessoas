@@ -87,7 +87,7 @@ public class PessoaResource {
             );
 
             pessoaService.adicionarEndereco(id, endereco);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException exception) {
             log.error("Nenhuma pessoa encontrada: ", exception);
             return ResponseEntity.notFound().build();
@@ -146,7 +146,7 @@ public class PessoaResource {
     public ResponseEntity adicionarPrincipal(@PathVariable Long idPessoa, @PathVariable Long idEndereco) {
         try {
             pessoaService.adicionarEnderecoPrincipal(idPessoa, idEndereco);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException exception) {
             log.error("Endereço ou pessoa nao encontrado", exception);
             return ResponseEntity.notFound().build();
