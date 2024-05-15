@@ -201,7 +201,7 @@ class PessoaResourceTest {
     }
 
     @Test
-    @DisplayName("Nao deve retornar todos enderecos")
+    @DisplayName("Nao deve retornar enderecos")
     void naoDeveRetornarTodosEnderecos() throws Exception {
         Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
         Pessoa result = pessoaRepository.save(pessoa);
@@ -213,5 +213,84 @@ class PessoaResourceTest {
 
         assertEquals(1, pessoaRepository.count());
         assertEquals(0, enderecoRepository.count());
+    }
+
+    @Test
+    @DisplayName("Deve retornar um endereco")
+    void deveRetornarUmEndereco() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
+        pessoaService.adicionarEndereco(result.getId(), endereco);
+
+        mvc.perform(get("/api/pessoas/{id}/enderecos/{endereco}", result.getId(), idEndereco)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logradouro").value(endereco.getLogradouro()));
+
+
+        assertEquals(1, pessoaRepository.count());
+        assertEquals(2, enderecoRepository.count());
+    }
+
+    @Test
+    @DisplayName("Nao deve retornar endereco com id inexistente")
+    void naoDeveRetornarEnderecoComIdInexistente() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        mvc.perform(get("/api/pessoas/{id}/enderecos/{endereco}", result.getId(), 1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+
+        assertEquals(1, pessoaRepository.count());
+        assertEquals(0, enderecoRepository.count());
+    }
+
+
+    @Test
+    @DisplayName("Deve editar endereco")
+    void deveEditarEndereco() throws Exception {
+        Pessoa pessoa = new Pessoa(null, "John Doe", LocalDate.of(1999, 5, 13));
+        Pessoa result = pessoaRepository.save(pessoa);
+
+        Endereco endereco = new Endereco(
+                null,
+                "Rua A",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
+
+        EnderecoDto dto = new EnderecoDto(
+                "Rua B",
+                "44000-000",
+                10,
+                "Feira de Santana",
+                "Bahia"
+        );
+
+        mvc.perform(put("/api/pessoas/enderecos/{id}", idEndereco)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logradouro").value(dto.logradouro()));
+
+        assertEquals(1, pessoaRepository.count());
+        assertEquals(1, enderecoRepository.count());
     }
 }

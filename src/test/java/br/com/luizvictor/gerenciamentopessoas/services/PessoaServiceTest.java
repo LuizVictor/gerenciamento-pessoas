@@ -4,6 +4,7 @@ import br.com.luizvictor.gerenciamentopessoas.entities.endereco.Endereco;
 import br.com.luizvictor.gerenciamentopessoas.entities.pessoa.Pessoa;
 import br.com.luizvictor.gerenciamentopessoas.repositories.PessoaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -114,7 +115,7 @@ class PessoaServiceTest {
         );
         pessoaService.adicionarEndereco(result.getId(), endereco);
         pessoaService.adicionarEndereco(result.getId(), endereco);
-        List<Endereco> enderecos = pessoaService.buscarPorId(result.getId()).getEnderecos();
+        List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(result.getId());
 
         assertEquals(2, enderecos.size());
         assertEquals(result.getId(), enderecos.getFirst().getPessoa().getId());
@@ -136,6 +137,7 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
+
         pessoaService.adicionarEndereco(result.getId(), endereco);
         pessoaService.adicionarEndereco(result.getId(), endereco);
         List<Endereco> enderecos = pessoaService.buscarTodosEnderecos(result.getId());
@@ -171,11 +173,9 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
-        pessoaService.adicionarEndereco(result.getId(), endereco);
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
 
-        Long enderecoId = pessoaService.buscarPorId(result.getId()).getEnderecos().getFirst().getId();
-
-        Endereco resultEndereco = pessoaService.buscarEnderecoPorId(result.getId(), enderecoId);
+        Endereco resultEndereco = pessoaService.buscarEnderecoPorId(result.getId(), idEndereco);
         assertEquals(endereco.getLogradouro(), resultEndereco.getLogradouro());
         assertEquals(result.getId(), resultEndereco.getPessoa().getId());
     }
@@ -206,11 +206,10 @@ class PessoaServiceTest {
                 "Feira de Santana",
                 "Bahia"
         );
-        pessoaService.adicionarEndereco(result.getId(), endereco);
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
 
-        Long enderecoId = pessoaService.buscarPorId(result.getId()).getEnderecos().getFirst().getId();
         Endereco enderecoEditado = new Endereco(
-                enderecoId,
+                idEndereco,
                 "Rua B",
                 "44000-000",
                 10,
@@ -238,11 +237,9 @@ class PessoaServiceTest {
                 "Bahia"
         );
 
-        pessoaService.adicionarEndereco(result.getId(), endereco);
-        List<Endereco> enderecos = pessoaService.buscarPorId(result.getId()).getEnderecos();
-        Long enderecoId = enderecos.getFirst().getPessoa().getId();
-        pessoaService.adicionarEnderecoPrincipal(result.getId(), enderecoId);
+        Long idEndereco = pessoaService.adicionarEndereco(result.getId(), endereco);
+        pessoaService.adicionarEnderecoPrincipal(result.getId(), idEndereco);
 
-        assertEquals(pessoaService.buscarPorId(result.getId()).getEnderecoPrincipal(), enderecoId);
+        assertEquals(pessoaService.buscarPorId(result.getId()).getEnderecoPrincipal(), idEndereco);
     }
 }

@@ -65,7 +65,7 @@ public class PessoaService {
     }
 
     @Transactional
-    public void adicionarEndereco(Long id, Endereco endereco) {
+    public Long adicionarEndereco(Long id, Endereco endereco) {
         try {
             Pessoa pessoa = pessoaRepository.getReferenceById(id);
             pessoa.adicionarEndereco(endereco);
@@ -74,6 +74,7 @@ public class PessoaService {
             Long enderecoId = result.getEnderecos().getLast().getId();
 
             logger.info("Adicionando endereco de ID {} a pessoa de ID {}", enderecoId, pessoa.getId());
+            return enderecoId;
         } catch (DataAccessException exception) {
             logger.error("Nao foi possivel adicionar endereco: {}", exception.getMessage());
             throw new RuntimeException(exception.getMessage());
@@ -94,8 +95,7 @@ public class PessoaService {
     }
 
     public Endereco buscarEnderecoPorId(Long pessoaId, Long enderecoId) {
-        buscarPorId(pessoaId);
-
+        pessoaRepository.getReferenceById(pessoaId);
         logger.info("Buscando por endereco de ID {}", enderecoId);
         return enderecoRepository.findById(enderecoId).orElseThrow(
                 () -> new EntityNotFoundException("Endereco nao encontrado")

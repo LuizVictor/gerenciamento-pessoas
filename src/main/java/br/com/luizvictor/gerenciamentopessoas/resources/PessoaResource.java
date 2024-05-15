@@ -101,4 +101,35 @@ public class PessoaResource {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/{idPessoa}/enderecos/{idEndereco}")
+    public ResponseEntity<Endereco> buscarEnderecoPorId(@PathVariable Long idPessoa, @PathVariable Long idEndereco) {
+        try {
+            Endereco endereco = pessoaService.buscarEnderecoPorId(idPessoa, idEndereco);
+            return ResponseEntity.ok(endereco);
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/enderecos/{id}")
+    public ResponseEntity<Endereco> editarEndereco(@PathVariable Long id, @RequestBody EnderecoDto data) {
+        try {
+            Endereco endereco = new Endereco(
+                    id,
+                    data.logradouro(),
+                    data.cep(),
+                    data.numero(),
+                    data.cidade(),
+                    data.estado()
+            );
+
+            Endereco result = pessoaService.editarEndereco(endereco);
+            return ResponseEntity.ok(result);
+        } catch (Exception exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+    }
 }
